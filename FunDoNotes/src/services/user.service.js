@@ -37,3 +37,9 @@ export const getUser = async (id) => {
   const data = await User.findById(id);
   return data;
 };
+
+//get single user by email
+export const getUserByEmail = async (email) => {
+  const data = await User.findOne({email: email});
+  return data;
+};

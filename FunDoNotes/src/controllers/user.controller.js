@@ -1,5 +1,7 @@
 import HttpStatus from 'http-status-codes';
 import * as UserService from '../services/user.service';
+import jwt from 'jsonwebtoken';
+import { authSecretKey } from '../config/auth';
 
 /**
  * Controller to get all users available
@@ -57,6 +59,54 @@ export const newUser = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Controller to login user
+ * @param  {object} req - request object
+ * @param {object} res - response object
+ * @param {Function} next
+ */
+export const loginUser = async (req, res, next) => {
+  try {
+    // get user email we got in request
+    const user = await UserService.getUserByEmail(req.body.email);
+    
+    // if we not found user with email
+    if(!user){
+      return res.status(404).send({ message: "User Not found." });
+    }
+    
+    // if password dosen't match
+    if (user.password != req.body.password) {
+      return res.status(401).send({
+        message: "Invalid Password!",
+      });
+    }
+    
+    // login successful
+    const userDetails = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email
+    };
+    jwt.sign(userDetails, authSecretKey, {expiresIn: '99999999999999'}, (error, token) => {
+      if(!error){
+        userDetails.token = token;
+        res.status(200).send({
+          ok: 'ok',
+          status: 200,
+          message: "Login successfull",
+          data: userDetails
+        });
+      } else {
+        res.status(500).send({ message: error.message })
+      }
+    });
+  } catch(error){
+    return res.status(500).send({ message: error.message });
+  }
+}
 
 /**
  * Controller to update a user

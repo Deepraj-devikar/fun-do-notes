@@ -15,3 +15,17 @@ export const newUserValidator = (req, res, next) => {
     next();
   }
 };
+
+export const loginUserValidator = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string().email({ tlds: { allow: false } }),
+    password: Joi.string().min(6).required()
+  });
+  const { error, value } = schema.validate(req.body);
+  if (error) {
+    next(error);
+  } else {
+    req.validatedBody = value;
+    next();
+  }
+};
