@@ -11,6 +11,7 @@ const routes = () => {
   router.get('/', (req, res) => {
     res.json('Welcome');
   });
+
   router.use('/users', userRoute);
 
   return router;
