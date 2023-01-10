@@ -1,6 +1,7 @@
 import HttpStatus from 'http-status-codes';
 import * as UserService from '../services/user.service';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { authSecretKey } from '../config/auth';
 
 /**
@@ -76,32 +77,33 @@ export const loginUser = async (req, res, next) => {
       return res.status(404).send({ message: "User Not found." });
     }
     
-    // if password dosen't match
-    if (user.password != req.body.password) {
-      return res.status(401).send({
-        message: "Invalid Password!",
-      });
-    }
-    
-    // login successful
-    const userDetails = {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email
-    };
-    jwt.sign(userDetails, authSecretKey, {expiresIn: '99999999999999'}, (error, token) => {
-      if(!error){
-        userDetails.token = token;
-        res.status(200).send({
-          ok: 'ok',
-          status: 200,
-          message: "Login successfull",
-          data: userDetails
+    // match password
+    bcrypt.compare(req.body.password, user.password).then(function(result) {
+      if(!result){
+        return res.status(401).send({
+          message: "Invalid Password!",
         });
-      } else {
-        res.status(500).send({ message: error.message })
       }
+      // login successful
+      const userDetails = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      };
+      jwt.sign(userDetails, authSecretKey, {expiresIn: '99999999999999'}, (error, token) => {
+        if(!error){
+          userDetails.token = token;
+          res.status(200).send({
+            ok: 'ok',
+            status: 200,
+            message: "Login successfull",
+            data: userDetails
+          });
+        } else {
+          res.status(500).send({ message: error.message })
+        }
+      });
     });
   } catch(error){
     return res.status(500).send({ message: error.message });
