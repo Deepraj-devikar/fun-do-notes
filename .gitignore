@@ -1,3 +1,4 @@
 FunDoNotes/node_modules*
 FunDoNotes/.env
 FunDoNotes/logs*
+FunDoNotes/build*

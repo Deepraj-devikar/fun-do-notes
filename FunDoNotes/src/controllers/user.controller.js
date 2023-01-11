@@ -1,7 +1,6 @@
 import HttpStatus from 'http-status-codes';
 import * as UserService from '../services/user.service';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import { authSecretKey } from '../config/auth';
 
 /**
@@ -69,22 +68,13 @@ export const newUser = async (req, res, next) => {
  */
 export const loginUser = async (req, res, next) => {
   try {
-    // get user email we got in request
-    const user = await UserService.getUserByEmail(req.body.email);
-    
-    // if we not found user with email
-    if(!user){
-      return res.status(404).send({ message: "User Not found." });
-    }
-    
-    // match password
-    bcrypt.compare(req.body.password, user.password).then(function(result) {
-      if(!result){
-        return res.status(401).send({
-          message: "Invalid Password!",
-        });
-      }
+    const data = await UserService.getLoginData(req.body);
+
+    if (data.error == 1) {
+      return res.status(data.status).send(data);
+    } else {
       // login successful
+      const user = data.user;
       const userDetails = {
         id: user.id,
         firstName: user.firstName,
@@ -104,7 +94,7 @@ export const loginUser = async (req, res, next) => {
           res.status(500).send({ message: error.message })
         }
       });
-    });
+    }
   } catch(error){
     return res.status(500).send({ message: error.message });
   }
