@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
 
 const userSchema = new Schema(
   {
@@ -9,15 +10,21 @@ const userSchema = new Schema(
       type: String
     },
     email: {
-      type: String
+      type: String,
+      index: true,
+      required: true,
+      unique : true 
     },
     password: {
-      type: String
+      type: String,
+      required: true
     }
   },
   {
     timestamps: true
   }
 );
+
+userSchema.plugin(uniqueValidator);
 
 export default model('User', userSchema);

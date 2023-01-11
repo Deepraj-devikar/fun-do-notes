@@ -14,8 +14,6 @@ var _jsonwebtoken = _interopRequireDefault(require("jsonwebtoken"));
 var _auth = require("../config/auth");
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-// import bcrypt from 'bcrypt';
-
 /**
  * Controller to get all users available
  * @param  {object} req - request object
@@ -149,24 +147,16 @@ var loginUser = /*#__PURE__*/function () {
       while (1) switch (_context4.prev = _context4.next) {
         case 0:
           _context4.prev = 0;
-          // get user email we got in request
-          // const user = await UserService.getUserByEmail(req.body.email);
-
-          // // if we not found user with email
-          // if(!user){
-          //   return res.status(404).send({ message: "User Not found." });
-          // }
-          console.log("Came in login user");
-          _context4.next = 4;
+          _context4.next = 3;
           return UserService.getLoginData(req.body);
-        case 4:
+        case 3:
           data = _context4.sent;
           if (!(data.error == 1)) {
-            _context4.next = 9;
+            _context4.next = 8;
             break;
           }
           return _context4.abrupt("return", res.status(data.status).send(data));
-        case 9:
+        case 8:
           // login successful
           user = data.user;
           userDetails = {
@@ -192,20 +182,20 @@ var loginUser = /*#__PURE__*/function () {
               });
             }
           });
-        case 12:
-          _context4.next = 17;
+        case 11:
+          _context4.next = 16;
           break;
-        case 14:
-          _context4.prev = 14;
+        case 13:
+          _context4.prev = 13;
           _context4.t0 = _context4["catch"](0);
           return _context4.abrupt("return", res.status(500).send({
             message: _context4.t0.message
           }));
-        case 17:
+        case 16:
         case "end":
           return _context4.stop();
       }
-    }, _callee4, null, [[0, 14]]);
+    }, _callee4, null, [[0, 13]]);
   }));
   return function loginUser(_x10, _x11, _x12) {
     return _ref4.apply(this, arguments);

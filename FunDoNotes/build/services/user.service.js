@@ -10,8 +10,6 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 var _user = _interopRequireDefault(require("../models/user.model"));
 var _bcrypt = _interopRequireDefault(require("bcrypt"));
 var _auth = require("../config/auth");
-// import { authSecretKey } from '../config/auth';
-
 //get all users
 var getAllUsers = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
