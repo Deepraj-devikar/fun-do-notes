@@ -4,11 +4,23 @@ const noteSchema = new Schema(
     {
         title: {
             type: String,
-            default: "undefined"
+            required: true
         },
         description: {
             type: String,
-            default: ""
+            required: true
+        },
+        color: {
+            type: String,
+            default: "#FFFFFF"
+        },
+        is_archived: {
+            type: Boolean,
+            default: false 
+        },
+        is_trash: {
+            type: Boolean,
+            default: false
         }
     },
     {
