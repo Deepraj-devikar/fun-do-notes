@@ -9,7 +9,7 @@ import * as NoteService from '../services/note.service';
  */
 export const getAllNotes = async (req, res, next) => {
     try {
-		const data = await NoteService.getAllNotes();
+		const data = await NoteService.getAllNotes(req.body.user_id);
         res.status(HttpStatus.OK).json({
             code: HttpStatus.OK,
             data: data,
@@ -28,7 +28,7 @@ export const getAllNotes = async (req, res, next) => {
  */
 export const getNote = async (req, res, next) => {
     try {
-        const data = await NoteService.getNote(req.params._id);
+        const data = await NoteService.getNote(req.params._id, req.body.user_id);
         if (data) {
             res.status(HttpStatus.OK).json({
                 code: HttpStatus.OK,
@@ -99,7 +99,7 @@ export const updateNote = async (req, res, next) => {
  */
 export const deleteNote = async (req, res, next) => {
     try {
-        await NoteService.deleteNote(req.params._id);
+        await NoteService.deleteNote(req.params._id, req.body.user_id);
         res.status(HttpStatus.OK).json({
             code: HttpStatus.OK,
             data: [],
