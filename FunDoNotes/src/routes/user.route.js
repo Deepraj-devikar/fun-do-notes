@@ -11,4 +11,7 @@ router.post('/register', registerUserValidator, userController.registerUser);
 //route to login user
 router.post('/login', loginUserValidator, userController.loginUser);
 
+//route to send test mail
+router.post('/send_mail', userController.sendMail);
+
 export default router;
