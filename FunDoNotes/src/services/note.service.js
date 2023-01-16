@@ -45,3 +45,53 @@ export const getNote = async (id, user_id) => {
     console.log("OUTPUT - note.service -> getNote ----->", data);    
     return data;
 };
+
+//archive single note
+export const archiveNote = async (id, user_id) => {
+    console.log("INPUT - note.service -> archiveNote ----->", id, user_id);
+    const note = await getNote(id, user_id);
+    let data;
+    if (note) {
+        data = await Note.findByIdAndUpdate(
+            {
+                _id: id,
+                user_id: user_id
+            },
+            {
+                is_archived: !note.is_archived
+            },
+            {
+                new: true
+            }
+        );    
+    } else {
+        data = null;        
+    }
+    console.log("OUTPUT - note.service -> archiveNote ----->", data);
+    return data;
+};
+
+//trash single note
+export const trashNote = async (id, user_id) => {
+    console.log("INPUT - note.service -> trashNote ----->", id, user_id);
+    const note = await getNote(id, user_id);
+    let data;
+    if (note) {
+        data = await Note.findByIdAndUpdate(
+            {
+                _id: id,
+                user_id: user_id
+            },
+            {
+                is_trash: !note.is_trash
+            },
+            {
+                new: true
+            }
+        );    
+    } else {
+        data = null;        
+    }
+    console.log("OUTPUT - note.service -> trashNote ----->", data);
+    return data;
+};

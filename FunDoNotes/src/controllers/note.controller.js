@@ -109,3 +109,55 @@ export const deleteNote = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Controller to archive a note
+ * @param  {object} req - request object
+ * @param {object} res - response object
+ * @param {Function} next
+ */
+export const archiveNote = async (req, res, next) => {
+    try {
+        const data = await NoteService.archiveNote(req.params._id, req.body.user_id);
+        if (data){
+            res.status(HttpStatus.ACCEPTED).json({
+                code: HttpStatus.ACCEPTED,
+                data: data,
+                message: 'Note archived successfully'
+            });
+        } else {
+            res.status(HttpStatus.NOT_FOUND).json({
+                code: HttpStatus.NOT_FOUND,
+                message: 'Note not found'
+            });
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * Controller to trash a note
+ * @param  {object} req - request object
+ * @param {object} res - response object
+ * @param {Function} next
+ */
+export const trashNote = async (req, res, next) => {
+    try {
+        const data = await NoteService.trashNote(req.params._id, req.body.user_id);
+        if (data){
+            res.status(HttpStatus.ACCEPTED).json({
+                code: HttpStatus.ACCEPTED,
+                data: data,
+                message: 'Note trashed successfully'
+            });
+        } else {
+            res.status(HttpStatus.NOT_FOUND).json({
+                code: HttpStatus.NOT_FOUND,
+                message: 'Note not found'
+            });
+        }
+    } catch (error) {
+        next(error);
+    }
+}
