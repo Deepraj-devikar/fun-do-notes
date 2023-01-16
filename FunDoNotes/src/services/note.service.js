@@ -40,9 +40,7 @@ export const deleteNote = async (id, user_id) => {
 
 //get single note
 export const getNote = async (id, user_id) => {
-    console.log("INPUT - note.service -> getNote ----->", "_id: "+id, "user_id: "+user_id);
     const data = await Note.findOne({_id: id, user_id: user_id});
-    console.log("OUTPUT - note.service -> getNote ----->", data);    
     return data;
 };
 
