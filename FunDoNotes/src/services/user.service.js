@@ -35,7 +35,7 @@ export const forgetPassword = async (email) => {
 		return {error: 1, status: 404, message: "User Not found."};
 	}
 	const token = jwt.sign({id: user.id, email: user.email}, process.env.AUTH_SECRET_KEY+user.password, {expiresIn: '15m'});
-	const resetPasswordUrl = process.env.BASE_URL + `/reset_password/${user.email}/${token}`;
+	const resetPasswordUrl = process.env.BASE_URL + `/users/reset_password/${user.email}/${token}`;
 	sendMail({
 		to: user.email,
 		subject: "Please reset your password for FunDoNotes.",
@@ -43,4 +43,42 @@ export const forgetPassword = async (email) => {
 		html: "<h1>your password reset link</h1><br><p>"+resetPasswordUrl+"</p>"
 	});
 	return {error: 0, status: 200, ok: 'ok', message: "Password reset link is send to your email."};	
+}
+
+//reset password
+export const resetPassword = async (params, body) => {
+	console.log("INPUT - user.service -> resetPassword ----->", params._email);
+	const user = await User.findOne({email: params._email});
+	if(!user){
+		return {error: 1, status: 404, message: "User Not found."};
+	}
+	const forgetPasswordUser = jwt.verify(params._token, process.env.AUTH_SECRET_KEY+user.password);
+	if (forgetPasswordUser.id != user.id || forgetPasswordUser.email != user.email) {
+		return {error: 1, status: 401, message: "Password reset token invalid or expired."};
+	}
+	if (body.password != body.confirm_password) {
+		return {error: 1, status: 403, message: "Password and confirm password is not match."};
+	}
+	const salt = await bcrypt.genSalt(process.env.SALT_ROUND);
+	const hashedPassword = await bcrypt.hash(body.password, salt);
+	
+	const data = await User.findByIdAndUpdate(
+        {
+            _id: user.id,
+            email: user.email
+        },
+        {
+			password: hashedPassword
+		},
+        {
+            new: true
+        }
+    );
+	sendMail({
+		to: user.email,
+		subject: "Your password reset successfully for FunDoNotes.",
+		text: "Your password reset successfully for FunDoNotes.",
+		html: "<h1>Your password reset successfully for FunDoNotes.</h1>"
+	});
+	return {error: 0, status: 200, ok: 'ok', user: data, message: "Password reset successfully."};	
 }
