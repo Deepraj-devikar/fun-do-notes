@@ -1,22 +1,20 @@
 import User from '../models/user.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { sendMail } from '../utils/mail.util';
 
 //register user
 export const registerUser = async (body) => {
 	// password hashing before saving to database
-	console.log("INPUT - user.service -> registerUser ----->", body);
 	const salt = await bcrypt.genSalt(process.env.SALT_ROUND);
 	const hashedPassword = await bcrypt.hash(body.password, salt);
 	body.password = hashedPassword;
 	const data = await User.create(body);
-	console.log("OUTPUT - user.service -> registerUser ----->", data);
 	return data;
 };
 
 //login user
 export const loginUser = async (body) => {
-	console.log("INPUT - user.service -> loginUser ----->", body);
 	const user = await User.findOne({email: body.email});
 	if(!user){
 		return {error: 1, status: 404, message: "User Not found."};
@@ -28,3 +26,21 @@ export const loginUser = async (body) => {
 	const token = jwt.sign({id: user.id, email: user.email}, process.env.AUTH_SECRET_KEY);
 	return {error: 0, status: 200, ok: 'ok', user: user, token: token, message: "Login successfull"};
 };
+
+//forget password
+export const forgetPassword = async (email) => {
+	console.log("INPUT - user.service -> forgetPassword ----->", email);
+	const user = await User.findOne({email: email});
+	if(!user){
+		return {error: 1, status: 404, message: "User Not found."};
+	}
+	const token = jwt.sign({id: user.id, email: user.email}, process.env.AUTH_SECRET_KEY+user.password, {expiresIn: '15m'});
+	const resetPasswordUrl = process.env.BASE_URL + `/reset_password/${user.email}/${token}`;
+	sendMail({
+		to: user.email,
+		subject: "Please reset your password for FunDoNotes.",
+		text: "your password reset link :- " + resetPasswordUrl,
+		html: "<h1>your password reset link</h1><br><p>"+resetPasswordUrl+"</p>"
+	});
+	return {error: 0, status: 200, ok: 'ok', message: "Password reset link is send to your email."};	
+}
