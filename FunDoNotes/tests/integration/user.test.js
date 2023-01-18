@@ -28,6 +28,16 @@ describe('User APIs Test', () => {
 
 	/**
 	 * Test the register user route
+	 * - should register user and return user details
+	 * - should return error for first name it is required
+	 * - should return error for first name length
+	 * - should return error for last name it is required
+	 * - should return error for last name length
+	 * - should return error for email it is required
+	 * - should return error for email format
+	 * - should return error for password it is required
+	 * - should return error for password length
+	 * - should return error route not found
 	 */
 	describe('POST /users/register', () => {
 		it('should register user and return user details', (done) => {
@@ -233,6 +243,175 @@ describe('User APIs Test', () => {
 					expect(res.body).to.be.an('object');
 					expect(res.body.message).to.be.an('string');
 					expect(res.body.message).to.be.equal("Ooops, route not found");
+					done();
+				});
+		});
+	});
+
+	/**
+	 * Test the login user route
+	 * - should login user and return user details
+	 * - should return error for email is required
+	 * - should return error for email format
+	 * - should return error for password it is required
+	 * - should return error for password length
+	 * - should return error route not found
+	 * - should return error for user not found
+	 * - should return error for invalid password
+	 */
+	describe('POST /users/login', () => {
+		it('should login user and return user details', (done) => {
+			const user = {
+				email: "pratik@gmail.com",
+				password: "pratik@123"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(200);
+					expect(res.body).to.be.an('object');
+					expect(res.body.error).to.be.an("number");
+					expect(res.body.error).to.be.equal(0);
+					expect(res.body.message).to.be.a('string');
+					expect(res.body.message).to.be.equal("Login successfull");
+					expect(res.body.token).to.be.a('string');
+					expect(res.body.user).to.be.an('object');
+					expect(res.body.user).to.have.property("firstName").to.be.equal("Pratik");
+					expect(res.body.user).to.have.property("lastName").to.be.equal("Nikhare");
+					expect(res.body.user).to.have.property("email").to.be.equal(user.email);
+					expect(res.body.user).to.have.property("password").to.be.not.equal(user.password);
+					done();
+				});
+		});
+
+		it('should return error for email is required', (done) => {
+			const user = {
+				password: "pratik@123"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"email\" is required");
+					expect(res.body.data).to.be.an('string').to.be.equal("");
+					expect(res.body.data).to.be.equal("");
+					done();
+				});
+		});
+
+		it('should return error for email format', (done) => {
+			const user = {
+				email: "pratik",
+				password: "pratik@123"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal( "\"email\" must be a valid email");
+					expect(res.body.data).to.be.an('string').to.be.equal("");
+					expect(res.body.data).to.be.equal("");
+					done();
+				});
+		});
+
+		it('should return error for password it is required', (done) => {
+			const user = {
+				email: "pratik@gmail.com",
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"password\" is required");
+					expect(res.body.data).to.be.an('string').to.be.equal("");
+					expect(res.body.data).to.be.equal("");
+					done();
+				});
+		});
+
+		it('should return error for password length', (done) => {
+			const user = {
+				email: "pratik@gmail.com",
+				password: "prati"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"password\" length must be at least 6 characters long");
+					expect(res.body.data).to.be.an('string').to.be.equal("");
+					expect(res.body.data).to.be.equal("");
+					done();
+				});
+		});
+
+		it('should return error route not found', (done) => {
+			const user = {
+				firstName: "Pratik",
+				lastName: "Nikhare",
+				email: "pratik@gmail.com",
+				password: "pratik@1234"
+			};
+			request(app)
+				.post('/api/v1/users/logi')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(404);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("Ooops, route not found");
+					done();
+				});
+		});
+
+		it('should return error for user not found', (done) => {
+			const user = {
+				email: "pratik1@gmail.com",
+				password: "pratik@123"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(404);
+					expect(res.body).to.be.an('object');
+					expect(res.body.error).to.be.an("number");
+					expect(res.body.error).to.be.equal(1);
+					expect(res.body.message).to.be.a('string');
+					expect(res.body.message).to.be.equal("User Not found.");
+					done();
+				});
+		});
+
+		it('should return error for invalid password', (done) => {
+			const user = {
+				email: "pratik@gmail.com",
+				password: "pratik@12318854"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(401);
+					expect(res.body).to.be.an('object');
+					expect(res.body.error).to.be.an("number");
+					expect(res.body.error).to.be.equal(1);
+					expect(res.body.message).to.be.a('string');
+					expect(res.body.message).to.be.equal("Invalid Password!");
 					done();
 				});
 		});
