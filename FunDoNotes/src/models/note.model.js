@@ -10,7 +10,7 @@ const noteSchema = new Schema(
             type: String,
             required: true
         },
-        user_id: {
+        userId: {
             type: String,
             required: true
         },
@@ -18,11 +18,11 @@ const noteSchema = new Schema(
             type: String,
             default: "#FFFFFF"
         },
-        is_archived: {
+        isArchive: {
             type: Boolean,
             default: false 
         },
-        is_trash: {
+        isTrash: {
             type: Boolean,
             default: false
         }

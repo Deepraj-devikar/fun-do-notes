@@ -41,7 +41,7 @@ export const forgetPassword = async (email) => {
 		return {error: 1, status: HttpStatus.NOT_FOUND, message: "User Not found."};
 	}
 	const token = jwt.sign({id: user.id, email: user.email}, process.env.AUTH_SECRET_KEY+user.password, {expiresIn: '15m'});
-	const resetPasswordUrl = process.env.BASE_URL + `/users/reset_password/${user.email}/${token}`;
+	const resetPasswordUrl = process.env.BASE_URL + `/users/reset-password/${user.email}/${token}`;
 	sendMail({
 		to: user.email,
 		subject: "Please reset your password for FunDoNotes.",
@@ -62,7 +62,7 @@ export const resetPassword = async (params, body) => {
 	if (forgetPasswordUser.id != user.id || forgetPasswordUser.email != user.email) {
 		return {error: 1, status: HttpStatus.UNAUTHORIZED, message: "Password reset token invalid or expired."};
 	}
-	if (body.password != body.confirm_password) {
+	if (body.password != body.confirmPassword) {
 		return {error: 1, status: HttpStatus.FORBIDDEN, message: "Password and confirm password is not match."};
 	}
 	const hashedPassword = await getHashPassword(body.password);
