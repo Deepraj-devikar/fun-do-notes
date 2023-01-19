@@ -3,7 +3,7 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 
 import app from '../../src/index';
-
+let token;
 describe('User APIs Test', () => {
 	before((done) => {
 		const clearCollections = () => {
@@ -281,6 +281,7 @@ describe('User APIs Test', () => {
 					expect(res.body.user).to.have.property("lastName").to.be.equal("Nikhare");
 					expect(res.body.user).to.have.property("email").to.be.equal(user.email);
 					expect(res.body.user).to.have.property("password").to.be.not.equal(user.password);
+					token = res.body.token;
 					done();
 				});
 		});
@@ -493,4 +494,131 @@ describe('User APIs Test', () => {
 				});
 		});
 	});	
+
+	/**
+	 * Test the POST note route
+	 * - should create note and return note details
+	 * - should create note and return error for title require
+	 * - should create note and return error for title length
+	 * - should create note and return error for description require
+	 * - should create note and return error for description length
+	 * - should create note and return error for authorization
+	 */
+	describe('POST /notes', () => {
+		it('should create note and return note details', (done) => {
+			const note = {
+				title: "Pratik Note",
+				description: "Pratik Nikhare is creating note."
+			};
+			request(app)
+				.post('/api/v1/notes')
+                .set({Authorization: "bearer "+token})
+				.send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(201);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("Note created successfully");
+					expect(res.body.data).to.be.an('object');
+					expect(res.body.data).to.have.property("title").to.be.equal(note.title);
+					expect(res.body.data).to.have.property("description").to.be.equal(note.description);
+					done();
+				});
+		});
+
+		it('should create note and return error for title require', (done) => {
+			const note = {
+				description: "Pratik Nikhare is creating note."
+			};
+			request(app)
+				.post('/api/v1/notes')
+                .set({Authorization: "bearer "+token})
+				.send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"title\" is required");
+					expect(res.body.data).to.be.an('string');
+					expect(res.body.data).to.be.equal('');
+					done();
+				});
+		});
+
+		it('should create note and return error for title length', (done) => {
+			const note = {
+				title: "Pra",
+				description: "Pratik Nikhare is creating note."
+			};
+			request(app)
+				.post('/api/v1/notes')
+                .set({Authorization: "bearer "+token})
+				.send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"title\" length must be at least 4 characters long");
+					expect(res.body.data).to.be.an('string').to.be.equal("");
+					expect(res.body.data).to.be.equal("");
+					done();
+				});
+		});
+
+		it('should create note and return error for description require', (done) => {
+			const note = {
+				title: "Pratik note"
+			};
+			request(app)
+				.post('/api/v1/notes')
+                .set({Authorization: "bearer "+token})
+				.send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"description\" is required");
+					expect(res.body.data).to.be.an('string');
+					expect(res.body.data).to.be.equal('');
+					done();
+				});
+		});
+
+		it('should create note and return error for description length', (done) => {
+			const note = {
+				title: "Pratik Note",
+				description: "Prat"
+			};
+			request(app)
+				.post('/api/v1/notes')
+                .set({Authorization: "bearer "+token})
+				.send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("\"description\" length must be at least 5 characters long");
+					expect(res.body.data).to.be.an('string').to.be.equal("");
+					expect(res.body.data).to.be.equal("");
+					done();
+				});
+		});
+
+		it('should create note and return error for authorization', (done) => {
+			const note = {
+				title: "Pratik Note",
+				description: "Pratik Nikhare is creating note."
+			};
+			request(app)
+				.post('/api/v1/notes')
+                .send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(400);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("Authorization token is required");
+					done();
+				});
+		});
+    });
 });
