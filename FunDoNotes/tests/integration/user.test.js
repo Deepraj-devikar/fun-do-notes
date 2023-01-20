@@ -3,7 +3,9 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 
 import app from '../../src/index';
-let token;
+let user1Token;
+let user2Token;
+let wrongToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYmU4ZWRlNDI2OTkxMWY5NDhmOTQ5ZCIsImVtYWlsIjoicHJhdmluQGdtYWlsLmNvbSIsImlhdCI6MTY3MzY2ODM1Nn0.e68c_dYMWPiKofma6X2zJFP0xUi-5bzougUYMAxG6lv";
 describe('User APIs Test', () => {
 	before((done) => {
 		const clearCollections = () => {
@@ -46,6 +48,30 @@ describe('User APIs Test', () => {
 				lastName: "Nikhare",
 				email: "pratik@gmail.com",
 				password: "pratik@123"
+			};
+			request(app)
+				.post('/api/v1/users/register')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(201);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("User created successfully");
+					expect(res.body.data).to.be.an('object');
+					expect(res.body.data).to.have.property("firstName").to.be.equal(user.firstName);
+					expect(res.body.data).to.have.property("lastName").to.be.equal(user.lastName);
+					expect(res.body.data).to.have.property("email").to.be.equal(user.email);
+					expect(res.body.data).to.have.property("password").to.be.not.equal(user.password);
+					done();
+				});
+		});
+
+		it('should register user 2 and return user details', (done) => {
+			const user = {
+				firstName: "Pravin",
+				lastName: "Bhoskar",
+				email: "pravin@gmail.com",
+				password: "pravin@123"
 			};
 			request(app)
 				.post('/api/v1/users/register')
@@ -281,7 +307,33 @@ describe('User APIs Test', () => {
 					expect(res.body.user).to.have.property("lastName").to.be.equal("Nikhare");
 					expect(res.body.user).to.have.property("email").to.be.equal(user.email);
 					expect(res.body.user).to.have.property("password").to.be.not.equal(user.password);
-					token = res.body.token;
+					user1Token = res.body.token;
+					done();
+				});
+		});
+
+		it('should login user 2 and return user details', (done) => {
+			const user = {
+				email: "pravin@gmail.com",
+				password: "pravin@123"
+			};
+			request(app)
+				.post('/api/v1/users/login')
+				.send(user)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(200);
+					expect(res.body).to.be.an('object');
+					expect(res.body.error).to.be.an("number");
+					expect(res.body.error).to.be.equal(0);
+					expect(res.body.message).to.be.a('string');
+					expect(res.body.message).to.be.equal("Login successfull");
+					expect(res.body.token).to.be.a('string');
+					expect(res.body.user).to.be.an('object');
+					expect(res.body.user).to.have.property("firstName").to.be.equal("Pratik");
+					expect(res.body.user).to.have.property("lastName").to.be.equal("Nikhare");
+					expect(res.body.user).to.have.property("email").to.be.equal(user.email);
+					expect(res.body.user).to.have.property("password").to.be.not.equal(user.password);
+					user2Token = res.body.token;
 					done();
 				});
 		});
@@ -503,6 +555,7 @@ describe('User APIs Test', () => {
 	 * - should create note and return error for description require
 	 * - should create note and return error for description length
 	 * - should create note and return error for authorization
+	 * - should create note and return error for invalid token
 	 */
 	describe('POST /notes', () => {
 		it('should create note and return note details', (done) => {
@@ -512,7 +565,7 @@ describe('User APIs Test', () => {
 			};
 			request(app)
 				.post('/api/v1/notes')
-                .set({Authorization: "bearer "+token})
+                .set({Authorization: "bearer "+user1Token})
 				.send(note)
 				.end((err, res) => {
 					expect(res.statusCode).to.be.equal(201);
@@ -532,7 +585,7 @@ describe('User APIs Test', () => {
 			};
 			request(app)
 				.post('/api/v1/notes')
-                .set({Authorization: "bearer "+token})
+                .set({Authorization: "bearer "+user1Token})
 				.send(note)
 				.end((err, res) => {
 					expect(res.statusCode).to.be.equal(500);
@@ -552,7 +605,7 @@ describe('User APIs Test', () => {
 			};
 			request(app)
 				.post('/api/v1/notes')
-                .set({Authorization: "bearer "+token})
+                .set({Authorization: "bearer "+user1Token})
 				.send(note)
 				.end((err, res) => {
 					expect(res.statusCode).to.be.equal(500);
@@ -571,7 +624,7 @@ describe('User APIs Test', () => {
 			};
 			request(app)
 				.post('/api/v1/notes')
-                .set({Authorization: "bearer "+token})
+                .set({Authorization: "bearer "+user1Token})
 				.send(note)
 				.end((err, res) => {
 					expect(res.statusCode).to.be.equal(500);
@@ -591,7 +644,7 @@ describe('User APIs Test', () => {
 			};
 			request(app)
 				.post('/api/v1/notes')
-                .set({Authorization: "bearer "+token})
+                .set({Authorization: "bearer "+user1Token})
 				.send(note)
 				.end((err, res) => {
 					expect(res.statusCode).to.be.equal(500);
@@ -620,5 +673,62 @@ describe('User APIs Test', () => {
 					done();
 				});
 		});
+
+		it('should create note and return error for invalid token', (done) => {
+			const note = {
+				title: "Pratik Note",
+				description: "Pratik Nikhare is creating note."
+			};
+			request(app)
+				.post('/api/v1/notes')
+				.set({Authorization: "bearer "+wrongToken})
+                .send(note)
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("invalid signature");
+					done();
+				});
+		});
     });
+
+	/**
+	 * Test the GET all notes route
+	 * - should get all notes and return note details
+	 * - should get all notes and return error for invalid token
+	 */
+	describe('GET /notes', () => {
+		it('should get all notes', (done) => {
+			request(app)
+				.get('/api/v1/notes')
+                .set({Authorization: "bearer "+user1Token})
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(200);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("All notes fetched successfully");
+					expect(res.body.data).to.be.an('array');
+					const users = res.body.data;
+					for (let index = 0; index < users.length; index++) {
+						expect(users[index]).to.have.property("title");
+						expect(users[index]).to.have.property("description");
+					}
+					done();
+				});
+		});
+
+		it('should get all notes and return error for invalid token', (done) => {
+			request(app)
+				.get('/api/v1/notes')
+                .set({Authorization: "bearer "+wrongToken})
+				.end((err, res) => {
+					expect(res.statusCode).to.be.equal(500);
+					expect(res.body).to.be.an('object');
+					expect(res.body.message).to.be.an('string');
+					expect(res.body.message).to.be.equal("invalid signature");
+					done();
+				});
+		});
+	});
 });
