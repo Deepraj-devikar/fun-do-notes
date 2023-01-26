@@ -38,7 +38,7 @@ export const getNote = async (req, res, next) => {
         } else {
             res.status(HttpStatus.NOT_FOUND).json({
                 code: HttpStatus.NOT_FOUND,
-                message: 'Note not fouond'
+                message: 'Note not found'
             });
         } 
     } catch (error) {
@@ -100,8 +100,8 @@ export const updateNote = async (req, res, next) => {
 export const deleteNote = async (req, res, next) => {
     try {
         await NoteService.deleteNote(req.params._id, req.body.userId);
-        res.status(HttpStatus.OK).json({
-            code: HttpStatus.OK,
+        res.status(HttpStatus.ACCEPTED).json({
+            code: HttpStatus.ACCEPTED,
             data: [],
             message: 'Note deleted successfully'
         });

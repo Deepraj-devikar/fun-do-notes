@@ -1,0 +1,87 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "v1",
+        "title": "Fun Do Notes",
+        "description": "Fun Do Notes CLI"
+    },
+    "host": "localhost:7000",
+    "basePath": "/api/v1/",
+    "tags": [
+        {
+            "name": "CLI",
+            "description": "Creating user"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/users/register": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "description": "Create registration",
+                "parameters": [
+                    {
+                        "name": "Create User",
+                        "in": "body",
+                        "description": "User",
+                        "schema": {
+                            "$ref": "#/definations/USer"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User Created"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "definations": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "securityDefinations": {
+                "JWT": {
+                    "type": "apiKey",
+                    "name": "token",
+                    "in": "header"
+                }
+            }
+        }
+    }
+}
