@@ -1,317 +1,420 @@
 {
-    "openapi": "3.0.0",
+    "swagger": "2.0.0",
     "info": {
-        "title": "Fun Do Notes"
+        "version": "v1",
+        "title": "Fundoo Notes",
+        "description": "Fundoo Notes CLI"
     },
-    "servers": [
-        {
-            "url": "http://localhost:3000/api/v1"
-        }
+    "host": "localhost:3000",
+    "basePath": "/api/v1/",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
     ],
     "paths": {
         "/users/register": {
             "post": {
-                "summary": "User Registration",
-                "description": "Register new user",
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definations/registationUser"
-                            }
+                "description": "Register new user",
+                "parameters": [
+                    {
+                        "name": "Register User",
+                        "in": "body",
+                        "description": "User details",
+                        "schema": {
+                            "$ref": "#/definations/registrationUser"
                         }
                     }
-                },
+                ],
+                "produces":[
+                    "application/json"
+                ],
                 "responses": {
                     "201": {
-                        "description": "successfull registation of User",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/registrationResponse"
-                                }
-                            }
-                        }
+                        "description": "Successfull registation of User"
                     },
                     "500": {
-                        "description": "in case of validation errors - (first, last names, email and password are required, min length of first and last names is 4, email is not valid, min length of password is 6",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "In case of validation errors - (first, last names, email and password are required, min length of first and last names is 4, email is not valid, min length of password is 6)"
                     },
                     "404": {
-                        "description": "route is not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "Route is not found"
                     }
                 }
             }
         },
         "/users/login": {
             "post": {
-                "summary": "User Login",
-                "description": "Login user and get user token",
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definations/loginUser"
-                            }
+                "description": "Login user and get user token",
+                "parameters": [
+                    {
+                        "name": "Login User",
+                        "in": "body",
+                        "description": "User details",
+                        "schema": {
+                            "$ref": "#/definations/loginUser"
                         }
                     }
-                },
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "responses": {
                     "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/loginResponse"
-                                }
-                            }
-                        }
+                        "description": "Successfull login of User save user token"
                     },
                     "500": {
-                        "description": "in case of validation errors like - (email and password are required, email is not valid, min length of password is 6", 
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "In case of validation errors like - (email and password are required, email is not valid, min length of password is 6)" 
                     },
                     "404": {
-                        "description": "user or route not not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "User or route not found"
                     }
                 }
             }
         },
         "/users/forget-password": {
             "post": {
-                "summary": "Forget Password",
-                "description": "Forget password and get reset password link in email",
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "deepraj@gmail.com"
-                                    }
-                                }
-                            }
+                "description": "Forget password and get reset password link in email",
+                "parameters": [
+                    {
+                        "name": "User email",
+                        "in": "body",
+                        "description": "User email",
+                        "schema": {
+                            "$ref": "#/definations/userEmail"
                         }
                     }
-                },
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "responses": {
                     "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/forgetPasswordResponse"
-                                }
-                            }
-                        }
+                        "description": "Reset password link is sent to your email"
                     },
                     "500": {
-                        "description": "in case of validation errors like - (email is required, email is not valid", 
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "In case of validation errors like - (email is required, email is not valid"
                     },
                     "404": {
-                        "description": "user or route not not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "User or route not found"
                     }
                 }
             }
         },
         "/users/reset-password/{_email}/{_token}": {
             "post": {
-                "summary": "Reset Password",
-                "description": "Reset password using reset password link got in email",
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definations/password"
-                            }
+                "description": "Reset password using reset password link got in email",
+                "parameters": [
+                    {
+                        "name": "_email",
+                        "in": "path",
+                        "description": "user email"
+                    },
+                    {
+                        "name": "_token",
+                        "in": "path",
+                        "description": "User token got in forgert password"
+                    },
+                    {
+                        "name": "User new password",
+                        "in": "body",
+                        "description": "User password",
+                        "schema": {
+                            "$ref": "#/definations/userPassword"
                         }
                     }
-                },
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "responses": {
                     "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/forgetPasswordResponse"
-                                }
-                            }
-                        }
+                        "description": "User password reseted successfully"
                     },
                     "500": {
-                        "description": "in case of validation errors like - (email is required, email is not valid", 
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "In case of validation errors like - (password and confirmPassword are required, min length password and confirmPassword should be 6, token is invalid)"
                     },
                     "404": {
-                        "description": "user or route not not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                        "description": "User or route not found"
                     }
                 }
             }
         },
         "/notes": {
-            "post": {
-                "summary": "Create Note",
-                "description": "Creating Note by seding note details, authorization is required",
+            "get": {
                 "tags": [
-                    "note"
+                    "Note"
                 ],
-                "security": [
-                    {
-                        "JWT": []
-                    }
+                "description": "Get All Notes, authorization is required",
+                "produces": [
+                    "application/json"
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definations/createNote"
-                            }
-                        }
+                "responses": {
+                    "200": {
+                        "description": "Get all notes"
+                    },
+                    "400": {
+                        "description": "Authorization token is required"
+                    },
+                    "404": {
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of Validation error - (Invalid signature)"
                     }
                 },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/allNotes"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "in case of validation errors like - (title and description are required, min length of title and description should be 4)", 
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "user or route not not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "get": {
-                "summary": "Get All Notes",
-                "description": "Get All Notes, authorization is required",
-                "tags": [
-                    "note"
-                ],
                 "security": [
                     {
                         "JWT": []
                     }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Note"
+                ],
+                "description": "Creating Note by seding note details, authorization is required",
+                "parameters": [
+                    {
+                        "name": "Create new Note",
+                        "in": "body",
+                        "description": "New Note",
+                        "schema": {
+                            "$ref": "#/definations/note"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "responses": {
                     "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/note"
-                                }
-                            }
-                        }
+                        "description": "Note created successfully"
                     },
-                    "500": {
-                        "description": "in case of validation errors like - (title and description are required, min length of title and description should be 4)", 
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
-                        }
+                    "400": {
+                        "description": "Authorization token is required"
                     },
                     "404": {
-                        "description": "user or route not not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/definations/error"
-                                }
-                            }
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of validation errors like - (title and description are required, min length of title and description should be 4, invalid signature)"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/notes/{_id}": {
+            "get": {
+                "tags": [
+                    "Note"
+                ],
+                "description": "Get Single Note by ID, authorization is required",
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "Note ID for getting note"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get note by ID"
+                    },
+                    "400": {
+                        "description": "Authorization token is required"
+                    },
+                    "404": {
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of validation error - invalid signature"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Note"
+                ],
+                "description": "Update Single Note by ID, authorization is required",
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "Note ID for getting note"
+                    },
+                    {
+                        "name": "Update Note",
+                        "in": "body",
+                        "description": "Note",
+                        "schema": {
+                            "$ref": "#/definations/note"
                         }
                     }
-                }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Note updated successfully"
+                    },
+                    "400": {
+                        "description": "Authorization token is required"
+                    },
+                    "404": {
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of validation errors like - (title and description are required, min length of title and description should be 4, invalid signature)"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Note"
+                ],
+                "description": "Delete Single Note by ID, authorization is required",
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "Note ID for getting note"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Note deleted successfully"
+                    },
+                    "400": {
+                        "description": "Authorization token is required"
+                    },
+                    "404": {
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of Validation error - (Invalid signature)"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/notes/{_id}/archive": {
+            "put": {
+                "tags": [
+                    "Note"
+                ],
+                "description": "archive Single Note by ID, if Note is archive then will unarchive it and if Note unarchive then will archive it, authorization is required",
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "Note ID for getting note"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Note archive or unarchive successfully"
+                    },
+                    "400": {
+                        "description": "Authorization token is required"
+                    },
+                    "404": {
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of validation error - (invalid signature)"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/notes/{_id}/trash": {
+            "put": {
+                "tags": [
+                    "Note"
+                ],
+                "description": "trash Single Note by ID, if Note is trash then will untrash it and if Note untrash then will trash it, authorization is required",
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "Note ID for getting note"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Note trash or untrash successfully"
+                    },
+                    "400": {
+                        "description": "Authorization token is required"
+                    },
+                    "404": {
+                        "description": "User, Route or Note not found"
+                    },
+                    "500": {
+                        "description": "In case of validation error - (invalid signature)"
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
             }
         }
     },
     "definations": {
-        "registationUser": {
+        "registrationUser": {
             "type": "object",
             "properties": {
                 "firstName": {
@@ -345,156 +448,16 @@
                 }
             }
         },
-        "createNote": {
+        "userEmail": {
             "type": "object",
             "properties": {
-                "title": {
-                    "type": "string",
-                    "example": "Note Title"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Note description"
-                }
-            }
-        },
-        "registrationResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "int32",
-                    "example": "201"
-                },
-                "data": {
-                    "$ref": "#/definations/user"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "User created successfully"
-                }
-            }
-        },
-        "loginResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "int32",
-                    "example": "200"
-                },
-                "user": {
-                    "$ref": "#/definations/user"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Login successfully"
-                },
-                "token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYmU4ZWRlNDI2OTkxMWY5NDhmOTQ5ZCIsImVtYWlsIjoicHJhdmluQGdtYWlsLmNvbSIsImlhdCI6MTY3MzY2ODM1Nn0.e68c_dYMWPiKofma6X2zJFP0xUi-5bzougUYMAxG6lv"
-                }
-            }
-        },
-        "forgetPasswordResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "int32",
-                    "example": "200"
-                },
-                "error": {
-                    "type": "int32",
-                    "example": "0"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Password reset link is send to your email."
-                }
-            }
-        },
-        "user": {
-            "type": "object",
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "63d6a085b5976f31b0b2835a"
-                },
-                "firstName": {
-                    "type": "string",
-                    "example": "Deepraj"
-                },
-                "lastName": {
-                    "type": "string",
-                    "example": "Devikar"
-                },
                 "email": {
                     "type": "string",
                     "example": "deepraj@gmail.com"
-                },
-                "password": {
-                    "type": "string",
-                    "example": "$2b$10$fVtWUE8x3wo3o9TWD8NHA.47Y3VIiaeT2dFIBLwI3bnkzVnsHAMl6"
-                },
-                "createdAt": {
-                    "type": "string",
-                    "example": "2023-01-29T16:36:22.196Z"
-                },
-                "updatedAt": {
-                    "type": "string",
-                    "example": "2023-01-29T16:36:22.196Z"
-                },
-                "__v": {
-                    "type": "int32",
-                    "example": 0
                 }
             }
         },
-        "note": {
-            "type": "object",
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "63d6a085b5976f31b0b2835a"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Note Title"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Note description"
-                },
-                "isArchive": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "isTrash": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "createdAt": {
-                    "type": "string",
-                    "example": "2023-01-29T16:36:22.196Z"
-                },
-                "updatedAt": {
-                    "type": "string",
-                    "example": "2023-01-29T16:36:22.196Z"
-                },
-                "__v": {
-                    "type": "int32",
-                    "example": 0
-                }
-            }
-        },
-        "allNotes": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "schema": {
-                    "$ref": "#/definations/note"
-                }
-            }
-        },
-        "password": {
+        "userPassword": {
             "type": "object",
             "properties": {
                 "password": {
@@ -507,20 +470,16 @@
                 }
             }
         },
-        "error": {
+        "note": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "int32",
-                    "example": "500"
-                },
-                "data": {
+                "title": {
                     "type": "string",
-                    "example": ""
+                    "example": "Note Title"
                 },
-                "message": {
+                "description": {
                     "type": "string",
-                    "example": "\"firstName\" is required"
+                    "example": "Note description"
                 }
             }
         }
@@ -528,7 +487,7 @@
     "securityDefinitions": {
         "JWT": {
             "type": "apiKey",
-            "name": "token",
+            "name": "authorization",
             "in": "header"
         }
     }
