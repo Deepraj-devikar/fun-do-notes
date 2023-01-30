@@ -1,87 +1,535 @@
 {
-    "swagger": "2.0",
+    "openapi": "3.0.0",
     "info": {
-        "version": "v1",
-        "title": "Fun Do Notes",
-        "description": "Fun Do Notes CLI"
+        "title": "Fun Do Notes"
     },
-    "host": "localhost:7000",
-    "basePath": "/api/v1/",
-    "tags": [
+    "servers": [
         {
-            "name": "CLI",
-            "description": "Creating user"
+            "url": "http://localhost:3000/api/v1"
         }
-    ],
-    "schemes": [
-        "http"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
     ],
     "paths": {
         "/users/register": {
             "post": {
+                "summary": "User Registration",
+                "description": "Register new user",
                 "tags": [
-                    "User"
+                    "user"
                 ],
-                "description": "Create registration",
-                "parameters": [
-                    {
-                        "name": "Create User",
-                        "in": "body",
-                        "description": "User",
-                        "schema": {
-                            "$ref": "#/definations/USer"
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definations/registationUser"
+                            }
                         }
                     }
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                },
                 "responses": {
                     "201": {
-                        "description": "User Created"
+                        "description": "successfull registation of User",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/registrationResponse"
+                                }
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "in case of validation errors - (first, last names, email and password are required, min length of first and last names is 4, email is not valid, min length of password is 6",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "route is not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "summary": "User Login",
+                "description": "Login user and get user token",
+                "tags": [
+                    "user"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definations/loginUser"
+                            }
+                        }
                     }
                 },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/loginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of validation errors like - (email and password are required, email is not valid, min length of password is 6", 
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "user or route not not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/forget-password": {
+            "post": {
+                "summary": "Forget Password",
+                "description": "Forget password and get reset password link in email",
+                "tags": [
+                    "user"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "deepraj@gmail.com"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/forgetPasswordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of validation errors like - (email is required, email is not valid", 
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "user or route not not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/reset-password/{_email}/{_token}": {
+            "post": {
+                "summary": "Reset Password",
+                "description": "Reset password using reset password link got in email",
+                "tags": [
+                    "user"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definations/password"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/forgetPasswordResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of validation errors like - (email is required, email is not valid", 
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "user or route not not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/notes": {
+            "post": {
+                "summary": "Create Note",
+                "description": "Creating Note by seding note details, authorization is required",
+                "tags": [
+                    "note"
+                ],
                 "security": [
                     {
                         "JWT": []
                     }
-                ]
-            }
-        },
-        "definations": {
-            "User": {
-                "type": "object",
-                "properties": {
-                    "firstName": {
-                        "type": "string"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definations/createNote"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/allNotes"
+                                }
+                            }
+                        }
                     },
-                    "lastName": {
-                        "type": "string"
+                    "500": {
+                        "description": "in case of validation errors like - (title and description are required, min length of title and description should be 4)", 
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
                     },
-                    "email": {
-                        "type": "string"
-                    },
-                    "password": {
-                        "type": "string"
+                    "404": {
+                        "description": "user or route not not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
                     }
                 }
             },
-            "securityDefinations": {
-                "JWT": {
-                    "type": "apiKey",
-                    "name": "token",
-                    "in": "header"
+            "get": {
+                "summary": "Get All Notes",
+                "description": "Get All Notes, authorization is required",
+                "tags": [
+                    "note"
+                ],
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/note"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of validation errors like - (title and description are required, min length of title and description should be 4)", 
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "user or route not not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definations/error"
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+    },
+    "definations": {
+        "registationUser": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "example": "Deepraj"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Devikar"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "deepraj@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "loginUser": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "deepraj@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "createNote": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "example": "Note Title"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Note description"
+                }
+            }
+        },
+        "registrationResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "int32",
+                    "example": "201"
+                },
+                "data": {
+                    "$ref": "#/definations/user"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "User created successfully"
+                }
+            }
+        },
+        "loginResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "int32",
+                    "example": "200"
+                },
+                "user": {
+                    "$ref": "#/definations/user"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Login successfully"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYmU4ZWRlNDI2OTkxMWY5NDhmOTQ5ZCIsImVtYWlsIjoicHJhdmluQGdtYWlsLmNvbSIsImlhdCI6MTY3MzY2ODM1Nn0.e68c_dYMWPiKofma6X2zJFP0xUi-5bzougUYMAxG6lv"
+                }
+            }
+        },
+        "forgetPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "int32",
+                    "example": "200"
+                },
+                "error": {
+                    "type": "int32",
+                    "example": "0"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Password reset link is send to your email."
+                }
+            }
+        },
+        "user": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "63d6a085b5976f31b0b2835a"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Deepraj"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Devikar"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "deepraj@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "$2b$10$fVtWUE8x3wo3o9TWD8NHA.47Y3VIiaeT2dFIBLwI3bnkzVnsHAMl6"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2023-01-29T16:36:22.196Z"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "example": "2023-01-29T16:36:22.196Z"
+                },
+                "__v": {
+                    "type": "int32",
+                    "example": 0
+                }
+            }
+        },
+        "note": {
+            "type": "object",
+            "properties": {
+                "_id": {
+                    "type": "string",
+                    "example": "63d6a085b5976f31b0b2835a"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Note Title"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Note description"
+                },
+                "isArchive": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "isTrash": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2023-01-29T16:36:22.196Z"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "example": "2023-01-29T16:36:22.196Z"
+                },
+                "__v": {
+                    "type": "int32",
+                    "example": 0
+                }
+            }
+        },
+        "allNotes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "schema": {
+                    "$ref": "#/definations/note"
+                }
+            }
+        },
+        "password": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                },
+                "confirmPassword": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "int32",
+                    "example": "500"
+                },
+                "data": {
+                    "type": "string",
+                    "example": ""
+                },
+                "message": {
+                    "type": "string",
+                    "example": "\"firstName\" is required"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "JWT": {
+            "type": "apiKey",
+            "name": "token",
+            "in": "header"
         }
     }
 }
