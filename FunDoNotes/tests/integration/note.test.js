@@ -173,7 +173,10 @@ describe('Note APIs Test', () => {
 					expect(res.statusCode).to.be.equal(200);
 					expect(res.body).to.be.an('object');
 					expect(res.body.message).to.be.an('string');
-					expect(res.body.message).to.be.equal("All notes fetched successfully");
+					expect(res.body.message).to.be.oneOf([
+						"All notes fetched successfully",
+						"All notes fetched successfully from redis cache"
+					]);
 					expect(res.body.data).to.be.an('array');
 					const users = res.body.data;
 					for (let index = 0; index < users.length; index++) {
@@ -213,7 +216,10 @@ describe('Note APIs Test', () => {
 					expect(res.statusCode).to.be.equal(200);
 					expect(res.body).to.be.an('object');
 					expect(res.body.message).to.be.an('string');
-					expect(res.body.message).to.be.equal("Note fetched successfully");
+					expect(res.body.message).to.be.oneOf([
+						"Note fetched successfully",
+						"Note fetched successfully from redis cache"
+					]);
 					expect(res.body.data).to.be.an('object');
 					expect(res.body.data).to.have.property("title").to.equal(createdNote.title);
 					expect(res.body.data).to.have.property("description").to.equal(createdNote.description);
@@ -511,7 +517,7 @@ describe('Note APIs Test', () => {
 	 * - should delete note and return error for invalid token
 	 * - should delete note
 	 */
-	describe('PUT /notes', () => {
+	describe('DELETE /notes', () => {
 		it('should delete note and return error for authorization', (done) => {
 			request(app)
 				.delete('/api/v1/notes/'+updatedNote._id)

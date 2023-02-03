@@ -5,13 +5,18 @@ export const redisClient = createClient({
     host: 'redis'
 });
 
+let redisConnectionEstablished = false;
+
 const redis = async () => {
     try {
         await redisClient.connect();
+        redisConnectionEstablished = true;
         console.log("REDIS CLIENT CONNECTION ESTABLISHED...");
     } catch (error) {
         console.log(error);
     }
 }
+
+export { redisConnectionEstablished };
 
 export default redis;
