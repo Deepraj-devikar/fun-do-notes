@@ -1,5 +1,6 @@
 import HttpStatus from 'http-status-codes';
 import * as UserService from '../services/user.service';
+import { logStream } from '../config/logger';
 
 /**
  * Controller to create a new user
@@ -16,6 +17,7 @@ export const registerUser = async (req, res, next) => {
 			message: 'User created successfully'
 		});
 	} catch (error) {
+		logStream.error("Could not register user.", error);
 		next(error);
 	}
 };
@@ -31,6 +33,7 @@ export const loginUser = async (req, res, next) => {
 		const data = await UserService.loginUser(req.body);
 		return res.status(data.status).send(data);
 	} catch(error){
+		logStream.error("Could not login user.", error);
 		next(error);
 	}
 }
@@ -46,6 +49,7 @@ export const forgetPassword = async (req, res, next) => {
 		const data = await UserService.forgetPassword(req.body.email);
 		return res.status(data.status).send(data);
 	} catch(error){
+		logStream.error("Could not forget password.", error);
 		next(error);
 	}
 }
@@ -61,6 +65,7 @@ export const resetPassword = async (req, res, next) => {
 		const data = await UserService.resetPassword(req.params, req.body);
 		return res.status(data.status).send(data);
 	} catch(error){
+		logStream.error("Could not reset password.", error);
 		next(error);
 	}
 }

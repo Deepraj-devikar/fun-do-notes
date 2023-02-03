@@ -1,4 +1,5 @@
 import { createClient } from 'redis';
+import logger from './logger';
 
 export const redisClient = createClient({
     port: 6379,
@@ -11,9 +12,9 @@ const redis = async () => {
     try {
         await redisClient.connect();
         redisConnectionEstablished = true;
-        console.log("REDIS CLIENT CONNECTION ESTABLISHED...");
+        logger.info('Connected to the redis client.');
     } catch (error) {
-        console.log(error);
+        logger.error('Could not connect to the redis client.', error);
     }
 }
 
