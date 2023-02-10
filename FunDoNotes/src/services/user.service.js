@@ -2,6 +2,7 @@ import User from '../models/user.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { sendMail } from '../utils/mail.util';
+import { amqpPublisher } from '../utils/amqpPub.util';
 import HttpStatus from 'http-status-codes';
 
 //password hashing
@@ -78,7 +79,7 @@ export const resetPassword = async (params, body) => {
             new: true
         }
     );
-	sendMail({
+	amqpPublisher({
 		to: user.email,
 		subject: "Your password reset successfully for FunDoNotes.",
 		text: "Your password reset successfully for FunDoNotes.",

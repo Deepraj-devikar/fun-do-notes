@@ -1,7 +1,6 @@
 import nodemailer from 'nodemailer';
 import { google } from 'googleapis';
 import logger from '../config/logger';
-import { rabbitmqPublisher } from './amqp.util';
 
 /**
  * Send mail utility
@@ -34,7 +33,6 @@ export const sendMail = (data) => {
 		};
         transport.sendMail(mailOptions);
 	} catch(error){
-		rabbitmqPublisher({publishType: process.env.MAIL_QUEUE, data: data});
 		logger.error("Error in send mail: ", error);
 	}
 }

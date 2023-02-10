@@ -20,8 +20,6 @@ import * as swaggerUi from 'swagger-ui-express';
 
 import options from './swagger/swagger.json';
 
-import { rabbitmqSubscriber } from './utils/amqp.util';
-
 const app = express();
 const host = process.env.APP_HOST;
 const port = process.env.APP_PORT;
@@ -35,7 +33,6 @@ app.use(morgan('combined', { stream: logStream }));
 
 database();
 redis();
-rabbitmqSubscriber();
 
 app.use(`/api/${api_version}`, routes());
 app.use(`/api-docs`, swaggerUi.serve, swaggerUi.setup(options));
